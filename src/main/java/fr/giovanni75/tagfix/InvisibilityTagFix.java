@@ -12,11 +12,13 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.logging.Level;
+
 public class InvisibilityTagFix extends JavaPlugin implements Listener {
 
 	static Scoreboard board;
 
-	private void removeTeam(Player p) {
+	private void removePlayerTeam(Player p) {
 		final ScoreboardTeam team = board.getTeam(p.getUniqueId().toString().substring(0, 16));
 		if (team != null) board.removeTeam(team);
 	}
@@ -31,19 +33,23 @@ public class InvisibilityTagFix extends JavaPlugin implements Listener {
 	@Override
 	public void onDisable() {
 		for (Player p : Bukkit.getOnlinePlayers())
-			removeTeam(p);
+			removePlayerTeam(p);
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onJoin(PlayerJoinEvent e) {
 		final String name = e.getPlayer().getUniqueId().toString().substring(0, 16);
-		board.createTeam(name);
+		if (board.getTeam(name) == null) {
+			board.createTeam(name);
+		} else {
+			Bukkit.getLogger().log(Level.WARNING, "The team associated to " + e.getPlayer().getName() + " already exists !");
+		}
 		board.addPlayerToTeam(e.getPlayer().getName(), name);
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onQuit(PlayerQuitEvent e) {
-		removeTeam(e.getPlayer());
+		removePlayerTeam(e.getPlayer());
 	}
 
 }
