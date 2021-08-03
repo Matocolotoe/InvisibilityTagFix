@@ -17,12 +17,6 @@ public class Configuration {
 	public static String PERMISSION_MESSAGE;
 
 	/**
-	 * The frequency (in ticks) at which tags are refreshed.
-	 * @see fr.giovanni75.tagfix.InvisibilityTask
-	 */
-	public static int REFRESH_FREQUENCY;
-
-	/**
 	 * Loads the above fields from the config.yml file.
 	 * Called when the plugin gets enabled or reloaded.
 	 */
@@ -30,7 +24,7 @@ public class Configuration {
 		final FileConfiguration config = InvisibilityTagFix.getInstance().getConfig();
 		PERMISSION = config.getString("permission");
 		PERMISSION_MESSAGE = config.getString("permission-message");
-		REFRESH_FREQUENCY = config.getInt("refresh-frequency");
+		InvisibilityTask.load(Math.max(config.getInt("refresh-frequency"), 1));
 	}
 
 }

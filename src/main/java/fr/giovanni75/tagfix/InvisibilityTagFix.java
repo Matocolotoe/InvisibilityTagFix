@@ -34,6 +34,7 @@ public class InvisibilityTagFix extends JavaPlugin implements Listener {
 
 	/**
 	 * A map used to store the name of the teams associated with players.
+	 * Avoids having to build the corresponding string on every task tick.
 	 */
 	private static final HashMap<Player, String> usernames = new HashMap<>();
 
@@ -57,7 +58,7 @@ public class InvisibilityTagFix extends JavaPlugin implements Listener {
 	 * Deletes the unique scoreboard team associated with a player.
 	 * Called when a player quits the server or when the plugin gets disabled.
 	 */
-	static void removePlayerTeam(Player p) {
+	private static void removePlayerTeam(Player p) {
 		final ScoreboardTeam team = scoreboard.getTeam(usernames.get(p));
 		if (team != null) scoreboard.removeTeam(team);
 	}

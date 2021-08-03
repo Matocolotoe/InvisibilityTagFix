@@ -15,8 +15,8 @@ public class CommandTagFix implements TabExecutor {
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if (sender.hasPermission(Configuration.PERMISSION)) {
 			if (args.length != 0 && args[0].equalsIgnoreCase("reload")) {
+				InvisibilityTagFix.getInstance().reloadConfig();
 				Configuration.load();
-				InvisibilityTask.load();
 				sender.sendMessage("§b[InvisibilityTagFix] §fSuccessfully reloaded configuration.");
 			} else {
 				sender.sendMessage("§7-----------------------------------------------------");

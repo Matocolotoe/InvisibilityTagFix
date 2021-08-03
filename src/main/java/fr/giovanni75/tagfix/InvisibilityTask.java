@@ -17,13 +17,13 @@ public class InvisibilityTask extends BukkitRunnable {
 		return false;
 	}
 
-	public static void load() {
+	public static void load(int period) {
 		try {
 			task.cancel();
 		} catch (IllegalArgumentException | IllegalStateException ignored) {
 			// Task wasn't running before
 		}
-		(task = new InvisibilityTask()).runTaskTimerAsynchronously(InvisibilityTagFix.getInstance(), 0, Configuration.REFRESH_FREQUENCY);
+		(task = new InvisibilityTask()).runTaskTimerAsynchronously(InvisibilityTagFix.getInstance(), 0, period);
 	}
 
 	@Override

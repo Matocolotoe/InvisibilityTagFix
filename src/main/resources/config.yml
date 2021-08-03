@@ -7,5 +7,5 @@ permission: "itf.admin"
 # Message which is displayed to players who don't have the above permission
 permission-message: "§cYou do not have the required permission to run this command."
 
-# Frequency (in ticks) at which tags are refreshed
+# Period (in ticks, minimum 1) of the task updating tags
 refresh-frequency: 1
