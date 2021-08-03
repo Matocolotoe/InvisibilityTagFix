@@ -1,4 +1,7 @@
 name: InvisibilityTagFix
-version: "1.0"
+version: "1.2"
 author: Giovanni75
 main: fr.giovanni75.tagfix.InvisibilityTagFix
+commands:
+  itf:
+    description: The main command of InvisibilityTagFix.

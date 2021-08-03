@@ -4,6 +4,7 @@ import net.minecraft.server.v1_8_R3.MinecraftServer;
 import net.minecraft.server.v1_8_R3.Scoreboard;
 import net.minecraft.server.v1_8_R3.ScoreboardTeam;
 import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -12,22 +13,67 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.logging.Level;
+import java.util.HashMap;
 
 public class InvisibilityTagFix extends JavaPlugin implements Listener {
 
-	static Scoreboard board;
+	private static InvisibilityTagFix instance;
+	private static String version;
 
-	private void removePlayerTeam(Player p) {
-		final ScoreboardTeam team = board.getTeam(p.getUniqueId().toString().substring(0, 16));
-		if (team != null) board.removeTeam(team);
+	/**
+	 * An object representing the server on which the plugin is currently running. It is used to retrieve the scoreboard as
+	 * well as a few properties such as online players and their active potion effects, without processing the data twice.
+	 */
+	private static final MinecraftServer server = MinecraftServer.getServer();
+
+	/**
+	 * The main scoreboard of the server.
+	 * Must be initialized after the plugin is completely enabled.
+	 */
+	private static Scoreboard scoreboard;
+
+	/**
+	 * A map used to store the name of the teams associated with players.
+	 */
+	private static final HashMap<Player, String> usernames = new HashMap<>();
+
+	static CraftServer getCurrentServer() {
+		return server.server;
+	}
+
+	static String getCurrentVersion() {
+		return version;
+	}
+
+	static InvisibilityTagFix getInstance() {
+		return instance;
+	}
+
+	static ScoreboardTeam getTeam(Player p) {
+		return scoreboard.getTeam(usernames.get(p));
+	}
+
+	/**
+	 * Deletes the unique scoreboard team associated with a player.
+	 * Called when a player quits the server or when the plugin gets disabled.
+	 */
+	static void removePlayerTeam(Player p) {
+		final ScoreboardTeam team = scoreboard.getTeam(usernames.get(p));
+		if (team != null) scoreboard.removeTeam(team);
 	}
 
 	@Override
 	public void onEnable() {
-		board = MinecraftServer.getServer().getWorldServer(0).getScoreboard();
+		instance = this;
+		scoreboard = server.getWorldServer(0).getScoreboard();
+		version = Bukkit.getPluginManager().getPlugin("InvisibilityTagFix").getDescription().getVersion();
+
+		saveDefaultConfig();
+		Configuration.load();
+
 		Bukkit.getPluginManager().registerEvents(this, this);
-		new InvisibilityTask().runTaskTimerAsynchronously(this, 0, 1);
+		getCommand("itf").setExecutor(new CommandTagFix());
+		getCommand("itf").setTabCompleter(new CommandTagFix());
 	}
 
 	@Override
@@ -39,17 +85,16 @@ public class InvisibilityTagFix extends JavaPlugin implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onJoin(PlayerJoinEvent e) {
 		final String name = e.getPlayer().getUniqueId().toString().substring(0, 16);
-		if (board.getTeam(name) == null) {
-			board.createTeam(name);
-		} else {
-			Bukkit.getLogger().log(Level.WARNING, "The team associated to " + e.getPlayer().getName() + " already exists !");
-		}
-		board.addPlayerToTeam(e.getPlayer().getName(), name);
+		if (scoreboard.getTeam(name) == null)
+			scoreboard.createTeam(name);
+		scoreboard.addPlayerToTeam(e.getPlayer().getName(), name);
+		usernames.put(e.getPlayer(), name);
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onQuit(PlayerQuitEvent e) {
 		removePlayerTeam(e.getPlayer());
+		usernames.remove(e.getPlayer());
 	}
 
 }

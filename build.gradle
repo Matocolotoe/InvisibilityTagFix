@@ -4,12 +4,14 @@ plugins {
 }
 
 group 'fr.giovanni75.tagfix'
-version '1.0'
+version '1.2'
 
 compileJava.options.encoding = 'UTF-8'
 
 repositories {
-	flatDir { dirs 'libs' }
+	flatDir {
+		dirs 'libs'
+	}
 }
 
 dependencies {
