@@ -2,7 +2,7 @@ package fr.giovanni75.tagfix;
 
 import net.minecraft.server.v1_8_R3.MobEffect;
 import net.minecraft.server.v1_8_R3.ScoreboardTeam;
-import net.minecraft.server.v1_8_R3.ScoreboardTeamBase;
+import net.minecraft.server.v1_8_R3.ScoreboardTeamBase.EnumNameTagVisibility;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -31,7 +31,7 @@ public class InvisibilityTask extends BukkitRunnable {
 		for (CraftPlayer p : InvisibilityTagFix.getCurrentServer().getOnlinePlayers()) {
 			final ScoreboardTeam team = InvisibilityTagFix.getTeam(p);
 			if (team != null) // Might not have been loaded yet
-				team.setNameTagVisibility(hasInvisibility(p) ? ScoreboardTeamBase.EnumNameTagVisibility.NEVER : ScoreboardTeamBase.EnumNameTagVisibility.ALWAYS);
+				team.setNameTagVisibility(hasInvisibility(p) ? EnumNameTagVisibility.NEVER : EnumNameTagVisibility.ALWAYS);
 		}
 	}
 
